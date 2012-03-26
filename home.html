@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Create Presentation | Canscape</title>
+<link rel="stylesheet" href="css/home.css" type="text/css">
+<script type="text/javascript" src="js/jquery.min.js"></script>
+
+<script type="text/javascript">
+function clearText(element)
+{
+	if(element.value=='Enter file name here')
+		element.value="";
+}
+function resetText(element)
+{
+	if(element.value=='')
+		element.value="Enter file name here";
+}
+function handleEnter(event)
+{
+	var evt = window.event || event;
+	if(evt.keyCode==13)
+	{
+		checkFile(document.getElementById('filename').value);
+	}
+}
+function checkFile(filename)
+{
+	if(filename=="index" || filename=="export")
+	{
+		alert('Enter a different filename!');
+		return false;
+	}
+	else if(filename=="Enter file name here")
+	{
+		alert('Enter a filename!');
+		return false;
+	}
+	ajaxSubmit(filename+".html")
+	return true;
+}
+function ajaxSubmit(filename)
+{
+	var url="create.php";
+	var contents="";
+	var params="filename="+filename;
+	var xmlhttp=new XMLHttpRequest();
+	xmlhttp.open("POST",url,false);
+	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xmlhttp.setRequestHeader("Content-length", params.length);
+	xmlhttp.setRequestHeader("Connection", "close");
+	xmlhttp.onreadystatechange = function() 
+	{
+		if(xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+		{
+			window.location.replace(filename);
+		}
+	}
+	xmlhttp.send(params);
+}
+</script>
+</head>
+<body bgcolor="#000000">
+	<div id="workspace">
+	<div class="footer">
+		<font color="black" size="2">
+			<hr>
+			<b>Developed by Arvind Krishnaa J, Srikrishnan S & Vishal Gautham V</b>
+			<hr>
+		</font>
+	</div>
+	</div>
+	<div id="logo" align="center">Canscape</div>
+	<div id="tag" align="center">A Canvas-Based Presentation Tool</div>
+	<p><img src="images/canscape.png" width="518px" height="324px"/></p>
+	
+	<p><input value="Enter file name here" name="filename" class="text-input" type="text" id="filename" onKeyPress="handleEnter(evt);" onfocus="clearText(this)" onblur="resetText(this)"/></p>
+	<p>
+	<button class="button" id="create"  onclick="checkFile(document.getElementById('filename').value)"><img src="images/TextEditor.png"> Create Presentation</button>
+	</p>
+</body>

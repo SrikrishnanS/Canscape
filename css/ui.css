@@ -1,0 +1,234 @@
+#logo
+{
+	position : fixed;
+	left : 0%;
+	top : 0%;
+	font-size:36px;
+	font-weight:bold;
+	-inkscape-font-specification:Century Schoolbook L Bold;
+	font-family:Century Schoolbook L;
+	font-style:normal;
+	font-stretch:normal;
+	font-variant:normal;
+	color:darkblue
+}
+button.west
+{
+	position : fixed;
+	left : 0%;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+}
+button.north
+{
+	position : fixed;
+	top : 0%;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+}
+#northtoolbar
+{
+	position : fixed;
+	height : 45px;
+	width : 100%;
+	top : 0%;
+	left : 0%;
+	background-color : #BABABA;
+}
+#westtoolbar
+{
+	position : fixed;
+	width : 52px;
+	top : 0%;
+	left : 0%;
+	height : 100%;
+	background-color : #BABABA;
+}
+#left
+{
+	position : fixed;
+	top : 75px;
+	right : 71px;
+	border : 2px solid darkblue;
+}
+#up
+{
+	position : fixed;
+	top : 49px;
+	right : 45px;
+	border : 2px solid darkblue;
+}
+#down
+{
+	position : fixed;
+	top : 101px;
+	right : 45px;
+	border : 2px solid darkblue;
+}
+#right
+{
+	position : fixed;
+	top : 75px;
+	right : 1.5%;
+	border : 2px solid darkblue;
+}
+#zoomin
+{
+	position : fixed;
+	top : 150px;
+	right : 45px;
+	border : 2px solid darkblue;
+}
+#zoomout
+{
+	position : fixed;
+	top : 175px;
+	right : 45px;
+	border : 2px solid darkblue;
+}
+#svgbasics 
+{
+	position:absolute;
+	top: 45px;
+	left : 52px;
+	width: 95.7%; 
+	height: 92.6%;
+	border: 2px solid darkblue; 
+}
+#colorPicker
+{
+	position:absolute;
+	top: 45px;
+	left : 52px;
+	width:200px;
+	height:200px;
+	border: 2px solid darkblue;
+}
+#clear
+{
+	position : fixed;
+	top : 50px;
+}
+#line
+{
+	position : fixed;
+	top : 100px;
+}
+#rect
+{
+	position : fixed;
+	top : 150px;
+}
+#circle
+{
+	position : fixed;
+	top : 200px;
+}
+#ellipse
+{
+	position : fixed;
+	top : 250px;
+}
+#svgtext
+{
+	position : fixed;
+	top : 300px;
+}
+#svgimage
+{
+	position : fixed;
+	top : 350px;
+}
+#map
+{
+	position : fixed;
+	top : 400px;
+}
+#edit_text
+{
+	position : fixed;
+	left : 200px;
+}
+#font-family
+{
+	position : fixed;
+	top : 2px;
+	height : 41px;
+	left : 260px;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+}
+#tileSize
+{
+	position : fixed;
+	left : 365px;
+	top : 2px;
+	height : 41px;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+
+}
+#plus
+{
+	position : fixed;
+	left : 438px;
+}
+#minus
+{
+	position : fixed;
+	left : 498px;
+}
+#rLeft
+{
+	position : fixed;
+	left : 558px;
+}
+#rRight
+{
+	position : fixed;
+	left : 618px;
+}
+#front
+{
+	position : fixed;
+	left : 678px;
+}
+#back
+{
+	position : fixed;
+	left : 738px;
+}
+#group
+{
+	position : fixed;
+	left : 798px;
+}
+#ungroup
+{
+	position : fixed;
+	left : 858px;
+}
+#ppath
+{
+	position : fixed;
+	left : 918px;	
+}
+#save
+{
+	position : fixed;
+	left : 978px;
+}
+#export
+{
+	position : fixed;
+	left : 1038px;
+}
+#delete
+{
+	position : fixed;
+	left : 1098px;
+}

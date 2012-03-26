@@ -1,0 +1,111 @@
+body
+{
+	background:#000000 url('images/bg.png') repeat left;
+}
+#workspace
+{
+	position : fixed;
+	top : 15%;
+	left : 350px;
+	height : 84%;
+	width : 45%;
+	background-color:lightgrey;
+	border : 2px red solid:
+	-moz-border-radius: 14px;
+	-webkit-border-radius: 14px;
+	border-radius: 14px;
+	z-index:-1;
+}
+p
+{
+	text-align:center;
+}
+#logo
+{
+	font-size:56px;
+	font-weight:bold;
+	-inkscape-font-specification:Century Schoolbook L Bold;
+	font-family:Century Schoolbook L;
+	font-style:normal;
+	font-stretch:normal;
+	font-variant:normal;
+	color:white;
+}
+#tag
+{
+	font-size:15px;
+	font-weight:bold;
+	-inkscape-font-specification:Century Schoolbook L Bold;
+	font-family:Century Schoolbook L;
+	font-style:normal;
+	font-stretch:normal;
+	font-variant:normal;
+	color:white;
+}
+.button 
+{
+	color: #fff;
+	font-size: 20px;
+	font-weight:bold;
+	-inkscape-font-specification:Century Schoolbook L Bold;
+	font-family:Century Schoolbook L;
+	font-style:normal;
+	font-stretch:normal;
+	font-variant:normal;
+	padding: 6px 10px;
+	-webkit-border-radius: 100px;
+	-moz-border-radius: 100px;
+	border-radius: 100px;
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#150C63), to(#120396));
+	text-shadow: #050505 0 -1px 0;
+	-moz-border-radius: 14px;
+	-webkit-border-radius: 14px;
+	border-radius: 14px;
+	border: solid 1px transparent;
+	font-weight: bold;
+	cursor: pointer;
+	text-shadow: slategray 2px -2px 2px;
+}
+			
+button:hover
+{
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#120396), to(#150C63), color-stop(80%, #120396));
+	text-shadow: #050505 0 -1px 2px;
+	color: #fff;
+}
+button img
+{
+	vertical-align: middle;
+}
+input.text-input
+{
+	font-weight:bold;
+	color:darkgrey;
+	-inkscape-font-specification:Century Schoolbook L Bold;
+	font-family:Century Schoolbook L;
+	font-style:normal;
+	font-stretch:normal;
+	font-variant:normal;
+	width: 275px;
+	-moz-border-radius: 14px;
+	-webkit-border-radius: 14px;
+	border-radius: 14px;
+	padding: 4px;
+	font-size: 24px;
+	background-color:lightgrey;
+	text-align:left;
+	text-shadow: slategray 1px -1px 2px;
+}
+input:focus
+{	
+	color:black;
+	background-color:white; 
+}
+div.footer
+{
+	position : fixed;
+	bottom : 3%;
+	text-align:center;
+	width : 45%;
+	text-shadow: slategray 2px -2px 2px;
+}
