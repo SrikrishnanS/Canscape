@@ -1,0 +1,54 @@
+CANSCAPE Version 0.9
+********************
+
+This is a simple canvas-based presentation tool in the making.
+
+Features:
+*********
+
+1. Ability to add simple shapes on the canvas such as a rectangle, ellipse, circle and lines. Also can add text.
+2. Ability to drag and move the canvas, and its elements. Ability to zoom the canvas, alongwith the elements.
+3. Select and delete individual elements.
+4. Export the SVG code (Made it a little easier with a PHP script).
+5. Ability to pan across the canvas using HTML buttons.
+6. Click to focus on exported code.
+7. Zooming of individual elements.
+8. Panning using arrow keys.
+9. Adding/ formatting text.
+10. Colors!
+11. Bring to front and move to back functionality.
+12. Import an image (highly restricted as it is hardcoded to work only with my working directory...)
+13. All dialogs made consistent, using jQuery UI Dialog
+14. Minimal support for rotate
+15. Set up the navigation path
+16. New user interface, resize by dragging rectangle.
+17. Saving the presentation
+18. Grouping elements to frame
+
+Installation
+************
+
+1. Copy the entire Canscape folder.
+2. Add it to your PHP container
+3. Open Chrome and go to http://localhost/Canscape
+
+Softwares Required
+******************
+
+1. Apache Server
+2. LAMP / WAMP
+3. Google-Chrome (Preferably beta version)
+
+Thanks to:
+**********
+
+1. The jquery SVG library : One of the coolest Javascript libraries out there.
+keith-wood.name/svg.html
+
+2. SVGPan : Another cool library which can be used as reference to learn basic matrix operations on SVG objects.
+
+Developers
+**********
+1. @TheAkj
+2. @SrkSChari
+3. @vishal_piano
