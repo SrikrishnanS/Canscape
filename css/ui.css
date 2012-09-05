@@ -10,7 +10,7 @@
 	font-style:normal;
 	font-stretch:normal;
 	font-variant:normal;
-	color:darkblue
+	color:black;
 }
 button.west
 {
@@ -51,42 +51,42 @@ button.north
 	position : fixed;
 	top : 75px;
 	right : 71px;
-	border : 2px solid darkblue;
+	border : 2px solid black;
 }
 #up
 {
 	position : fixed;
 	top : 49px;
 	right : 45px;
-	border : 2px solid darkblue;
+	border : 2px solid black;
 }
 #down
 {
 	position : fixed;
 	top : 101px;
 	right : 45px;
-	border : 2px solid darkblue;
+	border : 2px solid black;
 }
 #right
 {
 	position : fixed;
 	top : 75px;
 	right : 1.5%;
-	border : 2px solid darkblue;
+	border : 2px solid black;
 }
 #zoomin
 {
 	position : fixed;
 	top : 150px;
 	right : 45px;
-	border : 2px solid darkblue;
+	border : 2px solid black;
 }
 #zoomout
 {
 	position : fixed;
 	top : 175px;
 	right : 45px;
-	border : 2px solid darkblue;
+	border : 2px solid black;
 }
 #svgbasics 
 {
@@ -95,7 +95,7 @@ button.north
 	left : 52px;
 	width: 95.7%; 
 	height: 92.6%;
-	border: 2px solid darkblue; 
+	border: 2px solid black; 
 }
 #colorPicker
 {
@@ -104,7 +104,7 @@ button.north
 	left : 52px;
 	width:200px;
 	height:200px;
-	border: 2px solid darkblue;
+	border: 2px solid black;
 }
 #clear
 {

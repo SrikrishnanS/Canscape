@@ -1,0 +1,394 @@
+<html>
+<head>
+<link rel='stylesheet' href='css/jquery-ui-1.8.17.custom.css' />
+<script type='text/javascript' src='js/jquery.min.js'></script>
+<script type='text/javascript' src='js/jquery-ui-1.8.17.custom.min.js'></script>
+<script type='text/javascript' src='js/jquery.svg.js'></script>
+<script type='text/javascript' src='js/jquery.svganim.js'></script>
+<script>
+var selection=null;
+var rotationAngle=0;
+var Sx=1,Sy=1;
+var Tx=0,Ty=0;
+var Rx=0,Ry=0;
+
+//Selection specifics
+
+var sx,sy,tx,ty,rx,ry;
+sx=1,sy=1,tx=0,ty=0,rx=0,ry=0;
+
+function storeTransform()
+{
+	var svg = document.getElementById('viewport');
+	if(svg.getAttribute('transform')!=null)
+	{
+		var matrix=svg.getAttribute('transform').substring(7);
+		var matrix_elements=matrix.split(',');
+		matrix_elements[5]=matrix_elements[5].substring(0,matrix_elements[5].indexOf(')'));
+		Sx=parseFloat(matrix_elements[0]);
+		Sy=parseFloat(matrix_elements[3]);
+		Tx=parseFloat(matrix_elements[4]);
+		Ty=parseFloat(matrix_elements[5]);
+		Rx=parseFloat(matrix_elements[1]);
+		Ry=parseFloat(matrix_elements[2]);
+	}
+}
+
+function zoomTo(element)
+{
+	//zoomNormal();
+	var svg=document.getElementById('viewport');
+	while(element.nodeName=='tspan')
+	{
+		element=element.parentNode;	
+	}
+	selection=element;
+	var box = element.getBBox();
+	var initx=box.x;
+	var inity=box.y;
+	var transform='';
+	if(element.getAttribute('transform')!=null)
+	{	
+		transform=element.getAttribute('transform');
+		if(element.getAttribute('transform').indexOf('matrix')>=0)
+		{
+			var matrix=element.getAttribute('transform').substring(7);
+			var matrix_elements=matrix.split(',');
+			matrix_elements[5]=matrix_elements[5].substring(0,matrix_elements[5].indexOf(')'));
+			sx=parseFloat(matrix_elements[0]);
+			sy=parseFloat(matrix_elements[3]);
+			tx=parseFloat(matrix_elements[4]);
+			ty=parseFloat(matrix_elements[5]);
+			rx=parseFloat(matrix_elements[1]);
+			ry=parseFloat(matrix_elements[2]);
+			rotationAngle=Math.asin(rx)*180/Math.PI;	
+		}
+		if(element.getAttribute('transform').indexOf('rotate')>=0)				//get the exact rotation angle if available
+		{
+			var index=element.getAttribute('transform').indexOf('rotate');
+			var str=element.getAttribute('transform').substring(index+7);
+			var str_elements=str.split(',');
+			rotationAngle=parseFloat(str_elements[0]);
+			if(index==0)
+			{
+				transform='';
+			}
+			else
+			{
+				transform=transform.substring(0,index-1);	
+			}
+		}
+	}
+	box.x*=sx;
+	box.x+=tx;
+	box.x*=Sx;
+	box.x+=Tx;
+
+	box.y*=sy;
+	box.y+=ty;
+	box.y*=Sy;
+	box.y+=Ty;
+	
+	box.width*=Sx*sx;
+	box.height*=Sy*sy;
+
+	var cx,cy;
+	if(element.nodeName=='image' || element.nodeName=='rect')
+	{
+		cx=parseFloat(element.getAttribute('x'))+parseFloat(element.getAttribute('width'))/2;
+		cy=parseFloat(element.getAttribute('y'))+parseFloat(element.getAttribute('height'))/2;
+	}
+	else if(element.nodeName=='circle' || element.nodeName=='ellipse')
+	{
+		cx=parseFloat(element.getAttribute('cx'));
+		cy=parseFloat(element.getAttribute('cy'));
+	}
+	else if(element.nodeName=='line')
+	{
+		var x1=parseFloat(element.getAttribute('x1'));
+		var x2=parseFloat(element.getAttribute('x2'));
+		var y1=parseFloat(element.getAttribute('y1'));
+		var y2=parseFloat(element.getAttribute('y2'));		
+		cx=(x1+x2)/2;
+		cy=(y1+y2)/2;
+	}
+	
+	else if(element.nodeName=='text')
+	{
+		var x=parseFloat(element.getAttribute('x'));
+		var y=parseFloat(element.getAttribute('y'));
+		cx=x+10;
+		cy=y+10;	
+	}
+	cx*=sx;
+	cx+=tx;
+	cx*=Sx;
+	cx+=Tx;
+	cy*=sy;
+	cy+=ty;
+	cy*=Sy;
+	cy+=Ty;
+
+	var rotator;
+	rotator='rotate('+0+','+cx+','+cy+')';
+	if(transform.length!=0)
+	{
+		rotator=transform+','+rotator;	
+	}
+	element.setAttribute('transform',rotator);
+	$('#svgcanvas').animate({svgViewBox : box.x+' '+box.y+' '+box.width+' '+box.height}, 650);
+	highlightAll();
+	if(element.getAttribute('class')!='hotSpot')
+	{
+		for(var i = 0;i<window.frame.length;++i)
+		{
+			if(window.frame[i].getAttribute('item') != element.getAttribute('item'))
+			{
+				$(window.frame[i]).animate({svgOpacity: '0.1'}, 500);
+			}
+		}
+	}
+}
+function highlightAll()
+{
+	for(var i = 0;i<window.frame.length;i++)
+	{
+		$(window.frame[i]).animate({svgOpacity:'1.0'}, 650);
+	}
+}
+function zoomNormal()
+{
+	var cx,cy;
+	if(selection!=null)
+	{
+		highlightAll();
+		var transform='';
+		if(selection.getAttribute('transform')!=null)
+		{	
+			transform=selection.getAttribute('transform');
+			if(selection.getAttribute('transform').indexOf('rotate')>=0)				//get the exact rotation angle if available
+			{
+				var index=selection.getAttribute('transform').indexOf('rotate');
+				if(index==0)
+				{
+					transform='';
+				}
+				else
+				{
+					transform=transform.substring(0,index-1);	
+				}
+			}
+		}
+		var cx,cy;
+		if(selection.nodeName=='image' || selection.nodeName=='rect')
+		{
+			cx=parseFloat(selection.getAttribute('x'))+parseFloat(selection.getAttribute('width'))/2;
+			cy=parseFloat(selection.getAttribute('y'))+parseFloat(selection.getAttribute('height'))/2;
+		}
+		else if(selection.nodeName=='circle' || selection.nodeName=='ellipse')
+		{
+			cx=parseFloat(selection.getAttribute('cx'));
+			cy=parseFloat(selection.getAttribute('cy'));
+		}
+		else if(selection.nodeName=='line')
+		{
+			var x1=parseFloat(selection.getAttribute('x1'));
+			var x2=parseFloat(selection.getAttribute('x2'));
+			var y1=parseFloat(selection.getAttribute('y1'));
+			var y2=parseFloat(selection.getAttribute('y2'));		
+			cx=(x1+x2)/2;
+			cy=(y1+y2)/2;
+		}
+		
+		else if(selection.nodeName=='text')
+		{
+			var x=parseFloat(selection.getAttribute('x'));
+			var y=parseFloat(selection.getAttribute('y'));
+			cx=x+10;
+			cy=y+10;	
+		}
+		var rotator;
+		rotator='rotate('+rotationAngle+','+cx+','+cy+')';
+		if(transform.length!=0)
+		{
+			rotator=transform+','+rotator;	
+		}
+		selection.setAttribute('transform',rotator);
+	}
+	selection=null;
+	$('#svgcanvas').animate({svgViewBox : 0+' '+0+' '+screen.width+' '+screen.height}, 650);
+}
+
+function swapArrayElements(array_object, index_a, index_b)
+{
+    var temp = array_object[index_a];
+    array_object[index_a] = array_object[index_b];
+    array_object[index_b] = temp;
+}
+$(function() 
+{
+	$( '#dialog').dialog(
+	{
+		autoOpen: false, 
+		resizable : false,
+		open: function(event, ui) 
+		{ 
+			//hide close button.
+			$(this).parent().children().children('.ui-dialog-titlebar-close').hide();
+		}
+	});
+});
+function getElementByItem(itemName)
+{
+	var root = document.getElementById('viewport');
+	var itemSelected=root.firstChild;
+	while(itemSelected!=null)
+	{
+		if(itemSelected.nodeType==1 && itemSelected.getAttribute('item')==itemName)
+			return itemSelected;
+		itemSelected = itemSelected.nextSibling;
+	}
+	return null;
+}
+function removeChildren(node)
+{
+	while (node.hasChildNodes()) 
+	{
+    	node.removeChild(node.lastChild);
+    }
+}
+function highlight(element,event)
+{
+	var posX = event.clientX;
+	var posY = event.clientY;
+	var cutoffX = screen.width/2;
+	var cutoffY = screen.height/2;
+	var X,Y;
+	if(posX < cutoffX)
+		X = 'right';
+	else
+		X = 'left';
+	if(posY < cutoffY)
+		Y = 'buttom';
+	else
+		Y = 'top';
+	$(element).animate({svgOpacity : '0.5'}, 400);
+	var textDescription = document.createTextNode(element.getAttribute('content'));
+	removeChildren(document.getElementById('description'));
+	document.getElementById('description').appendChild(textDescription);
+	$('#dialog').dialog('option', 'title', element.getAttribute('title'));
+	$('#dialog').dialog('option', 'position', [X,Y]);
+	$('#dialog').dialog('open');
+}
+function lowlight(element)
+{
+	$(element).animate({svgOpacity : '0.0'}, 400);
+	$('#dialog').dialog('close');
+}
+function loadHotSpots()
+{
+	var root = document.getElementById('viewport');
+	var itemSelected=root.firstChild;
+	while(itemSelected!=null)
+	{
+		if(itemSelected.nodeType==1 && itemSelected.getAttribute('class')=='hotSpot')
+		{
+			lowlight(itemSelected);
+			itemSelected.setAttribute('onmouseover','highlight(this,event)');
+			itemSelected.setAttribute('onmouseout','lowlight(this)');
+		}
+		itemSelected = itemSelected.nextSibling;
+	}
+}
+var frame = new Array();
+function loadFrames()
+{
+	var view = document.getElementById('viewport');
+	for(var i=1;i<1000;i++)
+	{
+		var id='item'+i;
+		var node = getElementByItem(id);
+		if(node!=null)
+			window.frame.push(node);
+	}
+	maxNum=window.frame.length+1
+	for(var i = 0;i<window.frame.length;i++)
+	{
+		for(var j = 0;j<window.frame.length;j++)
+		{
+			var inode = window.frame[i];
+			var jnode = window.frame[j];
+			var ifno = inode.getAttribute('fno');
+			var jfno = jnode.getAttribute('fno')
+			if(ifno < jfno)
+			{
+				swapArrayElements(window.frame,i,j);
+			}
+		}
+	}
+}
+var viewNumber = -1;
+var maxNum;
+var minNum=0;
+function moveFrame(event)
+{
+	var e = window.event || event;
+	switch(e.keyCode)
+	{
+		case 37:
+		case 33:
+		if(viewNumber <minNum)
+		{
+			return;
+		}
+		viewNumber --;
+		zoomTo(window.frame[viewNumber]);
+		break;
+		case 39:
+		case 34:
+			if(viewNumber >maxNum)
+			{
+				viewNumber=maxNum;
+				return;
+			}
+			viewNumber ++;
+			zoomTo(window.frame[viewNumber]);
+			break;
+		case 40:
+			zoomNormal();
+			break;
+		case 38:	
+			viewNumber =-1;
+			zoomNormal();
+			break;				
+				
+		case 35: 
+			viewNumber=maxNum;
+			zoomTo(window.frame[viewNumber]);								
+			break;
+										
+		case 36: 
+			viewNumber=minNum;
+			zoomTo(window.frame[viewNumber]);					
+			break;
+	}
+}
+</script>
+</head>
+<body>
+<div id='dialog' title='Title goes here' style='display:none;height:100%'>
+	<p id='description' style='font-family:serif;text-align:justify;'>Description goes here</p>
+</div>
+
+<div id='svgbasics' tabindex='0'>
+<svg id='svgcanvas' xmlns='http://www.w3.org/2000/svg' version='1.1' id='svgcanvas' xmlns:xlink='http://www.w3.org/1999/xlink' onclick='zoomNormal()' onload='document.getElementById("svgbasics").focus();loadFrames();loadHotSpots();'><g id="viewport" onload="storeTransform();zoomNormal()" onclick="zoomTo(event.target);event.stopPropagation();" transform="matrix(1.0000001192092896,0,0,1.0000001192092896,-51.85245990753174,5.549958348270593)"><image x="100" y="100" width="555.991731349224px" height="555.991731349224px" onclick="select(evt.target)" stroke="black" xlink:href="pImages/india_world.svg" item="item6" transform="matrix(1,0,0,1,351.739990234375,1.187942504882806)" stroke-opacity="1.0" fno="3"></image><rect x="150" y="150" width="136.68132760301924" height="145.6295197164423" onmousemove="resize(evt)" onclick="selectSpot(event.target,event)" fill="lightblue" stroke="black" opacity="0.5" stroke-width="2" stroke-opacity="1.0" title="India" content="India, officially the Republic of India is a country in South Asia. It is the seventh-largest country by geographical area, the second-most populous country with over 1.2 billion people, and the most populous democracy in the world. Bounded by the Indian Ocean on the south, the Arabian Sea on the south-west, and the Bay of Bengal on the south-east, it shares land borders with Pakistan to the west; China, Nepal, and Bhutan to the north-east; and Burma and Bangladesh to the east. In the Indian Ocean, India is in the vicinity of Sri Lanka and the Maldives; in addition, India's Andaman and Nicobar Islands share a maritime border with Thailand and Indonesia." class="hotSpot" transform="matrix(1,0,0,1,517.5147094726562,145.58421325683594)"></rect><text x="40" y="40" font-size="12" fill="#2528da" transform="matrix(2.1435887813568115,0,0,2.1435887813568115,-26.566467285156254,-111.57913208007812)" id="text3" onclick="select(evt.target)" font-family="serif" item="item8"><tspan x="40" dy="25">A sample presentation for a geography class...</tspan></text><text x="40" y="40" font-size="12" fill="#c61401" transform="matrix(2.357947587966919,0,0,2.357947587966919,-4.2506256103515625,56.32092285156251)" id="text5" onclick="select(evt.target)" font-family="serif" item="item10" stroke-opacity="1.0"><tspan x="40" dy="25">India - A part of Asia</tspan></text><text x="40" y="40" font-size="12" fill="#c601b0" id="text6" onclick="select(evt.target)" item="item11" transform="matrix(3.1384284496307373,0,0,3.1384284496307373,1113.666015625,-168.9628448486328)" stroke-opacity="1.0" fno="4"><tspan x="40" dy="25"><tspan style="text-decoration:underline">States Of India</tspan></tspan></text><image x="100" y="100" width="555.991731349224px" height="555.991731349224px" onclick="select(evt.target)" stroke="black" xlink:href="pImages/Map_of_India.svg" item="item13" transform="matrix(1,0,0,1,963.8919677734375,54.20317077636718)" stroke-opacity="1.0" fno="5"></image><rect x="150" y="150" width="78.81233869826205" height="53.63467679322851" onmousemove="resize(evt)" onclick="selectSpot(event.target,event)" fill="lightblue" stroke="black" opacity="0.5" stroke-width="2" stroke-opacity="1.0" title="Bihar" content="Bihar is a state in eastern India. It is the 12th largest state in terms of geographical size at 38,202 sq mi and 3rd largest by population. Almost 58% of Biharis are below the age of 25, which is the highest proportion in India. Bihar lies mid-way between West Bengal in the east and Uttar Pradesh in the west. It is bounded by the country of Nepal to the north and by Jharkhand to the south. The Bihar plain is divided into two parts by the river Ganges which flows through the middle from west to east." class="hotSpot" transform="matrix(1,0,0,1,1204.435791015625,193.89495849609375)"></rect><rect x="150" y="150" width="66.57122700652712" height="53.62952841872223" onmousemove="resize(evt)" onclick="selectSpot(event.target,event)" fill="lightblue" stroke="black" opacity="0.5" stroke-width="2" stroke-opacity="1.0" title="Punjab" content="Punjab is a state in the northwest of the Republic of India, forming part of the larger Punjab region. The state is bordered by the Indian states of Himachal Pradesh to the east, Haryana to the south and southeast and Rajasthan to the southwest as well as the Pakistani province of Punjab to the west, it is also bounded to the north by Jammu and Kashmir. The state capital is Chandigarh. Major cities of Punjab includes Ludhiana, Amritsar, Patiala, Jalandhar, Bathinda, Mohali, and Chandigarh. After the partition of India in 1947, the Punjab province of British India was divided between India and Pakistan. The Indian Punjab was divided in 1966 with the formation of the new states of Haryana and Himachal Pradesh as well as the current state of Punjab. Punjab is the only state in India with a majority Sikh population." class="hotSpot" transform="matrix(1,0,0,1,1049.6610107421875,107.6917724609375)"></rect><rect x="150" y="150" width="102.52242337464314" height="85.04981306078709" onmousemove="resize(evt)" onclick="selectSpot(event.target,event)" fill="lightblue" stroke="black" opacity="0.5" stroke-width="2" stroke-opacity="1.0" title="Gujarat" content="Gujarat is a state in western India. It has an area of 75,686 sq mi with a coastline of 1,600 km, most of which lies on the Kathiawar peninsula, and a population in excess of 60 million. The state is bordered by Rajasthan to the north, Maharashtra to the south, Madhya Pradesh to the east and the Arabian Sea as well as the Pakistani province of Sindh on the west. Its capital is Gandhinagar, while its largest city is Ahmedabad. Gujarat is home to the Gujarati-speaking people of India." class="hotSpot" transform="matrix(1,0,0,1,974.2698364257812,229.46395874023438)"></rect><rect x="150" y="150" width="114.86748545575861" height="97.40122049961492" onmousemove="resize(evt)" onclick="selectSpot(event.target,event)" fill="lightblue" stroke="black" opacity="0.5" stroke-width="2" stroke-opacity="1.0" title="Tamil Nadu" content="Tamil Nadu is one of the 28 states of India. Its capital is Chennai, the largest city. Tamil Nadu lies in the southernmost part of the Indian Peninsula and is bordered by the union territory of Pondicherry, and the states of Kerala, Karnataka, and Andhra Pradesh. It is bound by the Eastern Ghats in the north, the Nilgiri, the Anamalai Hills, and Palakkad on the west, by the Bay of Bengal in the east, the Gulf of Mannar, the Palk Strait in the south east, and by the Indian Ocean in the south." class="hotSpot" transform="matrix(1,0,0,1,1087.4154052734375,415.8101806640625)"></rect>
+<text x="740" y="40" font-size="12" fill="#c61401" transform="matrix(2.357947587966919,0,0,2.357947587966919,-4.2506256103515625,56.32092285156251)" id="text5" onclick="select(evt.target)" font-family="serif" item="item14" stroke-opacity="1.0" fno="6"><tspan x="740" dy="25">Flight-Route</tspan></text>
+<image x="600" y="100" width="555.991731349224px" height="555.991731349224px" onclick="select(evt.target)" stroke="black" xlink:href="pImages/path.svg" item="item15" transform="matrix(1,0,0,1,963.8919677734375,54.20317077636718)" stroke-opacity="1.0" fno="7"></image>
+</g> 
+</svg>
+</div>
+<script type='text/javascript'>
+document.getElementById('svgbasics').addEventListener('keydown', moveFrame, false);
+</script>
+</body>
+</html>

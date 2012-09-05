@@ -1,12 +1,4 @@
-<?php
-$contents=$_POST["exportContent"];
-$contents=str_replace("•","&#149;",$contents);
-$contents=str_replace("whitespace","&#160",$contents);
-$contents=str_replace("lt","<",$contents);
-$contents=str_replace("gt",">",$contents);
-$contents=str_replace("amp","&",$contents);
-
-$htmlData="<html>
+<html>
 <head>
 <link rel='stylesheet' href='css/jquery-ui-1.8.17.custom.css' />
 <script type='text/javascript' src='js/jquery.min.js'></script>
@@ -359,8 +351,8 @@ function loadHotSpots()
 	}
 }
 var frame = new Array();
-var svgNS = 'http://www.w3.org/2000/svg';
-var xlinkNS = 'http://www.w3.org/1999/xlink';
+var svgNS = "http://www.w3.org/2000/svg";
+var xlinkNS = "http://www.w3.org/1999/xlink";
 function loadFrames()
 {
 	var root = document.getElementById('viewport');
@@ -398,14 +390,15 @@ function loadFrames()
 					y+=ty-16;
 				}
 			}	
-			var callImg = document.createElementNS(svgNS,'image');
-			callImg.setAttributeNS(xlinkNS,'xlink:href','pImages/callout.svg');	
-			callImg.setAttributeNS(null,'x',x);
-			callImg.setAttributeNS(null,'y',y);
-			callImg.setAttributeNS(null,'width',16);
-			callImg.setAttributeNS(null,'height',16);
+			var callImg = document.createElementNS(svgNS,"image");
+			callImg.setAttributeNS(xlinkNS,"xlink:href","pImages/callout.svg");	
+			callImg.setAttributeNS(null,"x",x);
+			callImg.setAttributeNS(null,"y",y);
+			callImg.setAttributeNS(null,"width",16);
+			callImg.setAttributeNS(null,"height",16);
 			document.getElementById('viewport').appendChild(callImg);
 		}
+		
 		itemSelected = itemSelected.nextSibling;
 	}
 	maxNum=window.frame.length+1;
@@ -478,16 +471,15 @@ function moveFrame(event)
 </div>
 
 <div id='svgbasics' tabindex='0'>
-<svg id='svgcanvas' xmlns='http://www.w3.org/2000/svg' version='1.1' id='svgcanvas' xmlns:xlink='http://www.w3.org/1999/xlink' onclick='zoomNormal()' onload='document.getElementById(\"svgbasics\").focus();loadFrames();loadHotSpots();removeTiles();'>".$contents." 
+<svg id='svgcanvas' xmlns='http://www.w3.org/2000/svg' version='1.1' id='svgcanvas' xmlns:xlink='http://www.w3.org/1999/xlink' onclick='zoomNormal()' onload='document.getElementById("svgbasics").focus();loadHotSpots();removeTiles();'><g id="viewport" onload="storeTransform();loadFrames();zoomNormal()" onclick="zoomTo(event.target);event.stopPropagation();" transform="matrix(1.0000001192092896,0,0,1.0000001192092896,-171.29027187823522,-29.238863706586926)">
+		<circle cx="0" cy="0" r="100000" id="background" fill="url(#rulerPattern)" onclick="deselectChoice(event)"></circle><textCache index="1" content="<p>MIPS Architecture</p>"></textCache><textCache index="2" content="<p>By</p><p>S. Srikrishnan and V. Vishal Gautham</p>"></textCache><textCache index="3" content="<p>Introduction</p>"></textCache><textCache index="4" content="<p>What is MIPS ???</p>"></textCache><ellipse cx="199" cy="95" rx="291.8738390350534" ry="188.30570260326016" onclick="select(evt.target,evt)" fill="#ffffff" stroke="black" stroke-width="2" item="item7" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,867,193.99998474121094)" fno="3"></ellipse><image x="100" y="100" width="417.7248169415656px" height="417.7248169415656px" onclick="select(evt.target,evt)" stroke="black" xlink:href="pImages/MIPS_Architecture_(Pipelined).svg" item="item10" class="shape" transform="matrix(1,0,0,1,740.9999389648438,-5.0000152587890625)" stroke-opacity="1.0" fno="4"></image><rect x="150" y="150" width="28.000024914744003" height="55.000014901161194" onmousemove="resize(evt)" onclick="selectSpot(event.target,event)" fill="lightblue" stroke="black" opacity="0.5" stroke-width="2" stroke-opacity="1.0" title="ALU" content="In computing, an arithmetic logic unit (ALU) is a digital circuit that performs arithmetic and logical operations. The ALU is a fundamental building block of the central processing unit of a computer, and even the simplest microprocessors contain one for purposes such as maintaining timers. The processors found inside modern CPUs and graphics processing units (GPUs) accommodate very powerful and very complex ALUs; a single component may contain a number of ALUs." class="hotSpot" transform="matrix(1,0,0,1,919.9999389648438,165)"></rect><g class="frame" item="item11" transform="matrix(1,0,0,1,5.999999999999996,-6.396792817664476e-17)" stroke-opacity="1.0" fno="1"><rect x="106" y="1" width="216.95300000000003" height="157.05800000000005" onclick="select(evt.target,evt)" fill="#d2e3f4" stroke="black" stroke-width="1" item="item1" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,66,71)"></rect><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text1" item="item2" class="shape" stroke-opacity="1.0" transform="matrix(1.7715610265731812,0,0,1.7715610265731812,132,-10)"><tspan x="40" dy="25">MIPS Architecture</tspan></text><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text2" item="item3" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,142,99)"><tspan x="40" dy="25">By</tspan><tspan x="40" dy="25">S. Srikrishnan and V. Vishal Gautham</tspan></text></g><g class="frame" item="item12" transform="matrix(1,0,0,1,-25.99993896484374,9)" stroke-opacity="1.0" fno="2"><circle cx="255" cy="126" r="148.44766221890347" onclick="select(evt.target,evt)" fill="#fffbbd" stroke="black" stroke-width="2" item="item4" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,255,274)"></circle><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#9e2300" onclick="select(evt.target,evt)" id="text3" item="item5" class="shape" stroke-opacity="1.0" transform="matrix(3.7974984645843506,0,0,3.7974984645843506,251,100)"><tspan x="40" dy="25">Introduction</tspan></text><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text4" item="item6" class="shape" stroke-opacity="1.0" transform="matrix(2.5937423706054688,0,0,2.5937423706054688,306,256)"><tspan x="40" dy="25">What is MIPS ???</tspan></text></g><rect x="150" y="150" width="47.00003206730466" height="61.000014901161194" onmousemove="resize(evt)" onclick="selectSpot(event.target,event)" fill="lightblue" stroke="black" opacity="0.5" stroke-width="2" stroke-opacity="1.0" title="Instrution Memory" content="The Memory Address Register (MAR) is a CPU register that either stores the memory address from which data will be fetched to the CPU or the address to which data will be sent and stored. In other words, MAR holds the memory location of data that needs to be accessed. When reading from memory, data addressed by MAR is fed into the MDR (memory data register) and then used by the CPU. When writing to memory, the CPU writes data from MDR to the memory location whose address is stored in MAR.
+The Memory Address Register is half of a minimal interface between a microprogram and computer storage. The other half is a memory data register." class="hotSpot" transform="matrix(1,0,0,1,729.9999389648438,151)"></rect><rect x="150" y="150" width="20.00002086162567" height="58.000014901161194" onmousemove="resize(evt)" onclick="selectSpot(event.target,event)" fill="lightblue" stroke="black" opacity="0.5" stroke-width="2" stroke-opacity="1.0" title="Program Counter" content="The program counter (PC), commonly called the instruction pointer (IP) in Intel x86 and Itanium microprocessors, and sometimes called the instruction address register, or just part of the instruction sequencer in some computers, is a processor register that indicates where the computer is in its instruction sequence. Depending on the details of the particular computer, the PC or IP holds either the memory address of the instruction being executed, or the address of the next instruction to be executed." class="hotSpot" transform="matrix(1,0,0,1,699.9999389648438,151)"></rect><rect x="150" y="150" width="47.00003182888594" height="60.000014901161194" onmousemove="resize(evt)" onclick="selectSpot(event.target,event)" fill="lightblue" stroke="black" opacity="0.5" stroke-width="2" stroke-opacity="1.0" title="Memory Data Register" content="The Memory Data Register (MDR) is the register of a computer's control unit that contains the data to be stored in the computer storage (e.g. RAM), or the data after a fetch from the computer storage. It acts like a buffer and holds anything that is copied from the memory ready for the processor to use it. The Memory Data Register is half of a minimal interface between a microprogram and computer storage, the other half is a memory address register." class="hotSpot" transform="matrix(1,0,0,1,987,177)"></rect><textCache index="5" content="<p>Thank You...</p>"></textCache><g class="frame" item="item17" transform="matrix(1,0,0,1,-5.99999999999999,5)" fno="7"><rect x="131" y="100" width="180" height="152" onclick="select(evt.target,evt)" fill="#ebdfdb" stroke="black" stroke-width="1" item="item13" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,1057,380.99993896484375)"></rect><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text5" item="item14" class="shape" stroke-opacity="1.0" transform="matrix(2.357947587966919,0,0,2.357947587966919,1110,414.99993896484375)"><tspan x="40" dy="25">Thank You...</tspan></text></g>
+<rect x="150" y="150" width="28.000024914744003" height="55.000014901161194" onmousemove="resize(evt)" onclick="selectSpot(event.target,event)" fill="lightblue" stroke="black" opacity="0.5" stroke-width="2" stroke-opacity="1.0" title="ALU" content="In computing, an arithmetic logic unit (ALU) is a digital circuit that performs arithmetic and logical operations. The ALU is a fundamental building block of the central processing unit of a computer, and even the simplest microprocessors contain one for purposes such as maintaining timers. The processors found inside modern CPUs and graphics processing units (GPUs) accommodate very powerful and very complex ALUs; a single component may contain a number of ALUs." class="hotSpot" transform="matrix(1,0,0,1,919.9999389648438,165)"></rect>
+</g> 
 </svg>
 </div>
 <script type='text/javascript'>
 document.getElementById('svgbasics').addEventListener('keydown', moveFrame, false);
 </script>
 </body>
-</html>";
-$fn=$_POST["fileName"].".html";
-$fh = fopen($fn, 'w');
-fwrite($fh, $htmlData);
-fclose($fh);
-?>
+</html>

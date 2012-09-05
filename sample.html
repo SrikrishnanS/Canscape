@@ -1,12 +1,4 @@
-<?php
-$contents=$_POST["exportContent"];
-$contents=str_replace("•","&#149;",$contents);
-$contents=str_replace("whitespace","&#160",$contents);
-$contents=str_replace("lt","<",$contents);
-$contents=str_replace("gt",">",$contents);
-$contents=str_replace("amp","&",$contents);
-
-$htmlData="<html>
+<html>
 <head>
 <link rel='stylesheet' href='css/jquery-ui-1.8.17.custom.css' />
 <script type='text/javascript' src='js/jquery.min.js'></script>
@@ -478,16 +470,12 @@ function moveFrame(event)
 </div>
 
 <div id='svgbasics' tabindex='0'>
-<svg id='svgcanvas' xmlns='http://www.w3.org/2000/svg' version='1.1' id='svgcanvas' xmlns:xlink='http://www.w3.org/1999/xlink' onclick='zoomNormal()' onload='document.getElementById(\"svgbasics\").focus();loadFrames();loadHotSpots();removeTiles();'>".$contents." 
+<svg id='svgcanvas' xmlns='http://www.w3.org/2000/svg' version='1.1' id='svgcanvas' xmlns:xlink='http://www.w3.org/1999/xlink' onclick='zoomNormal()' onload='document.getElementById("svgbasics").focus();loadFrames();loadHotSpots();removeTiles();'><g id="viewport" onload="storeTransform();zoomNormal()" onclick="zoomTo(event.target);event.stopPropagation();" transform="matrix(1.200000199662874,0,0,1.200000199662874,-42.19065564654985,-96.8391508600062)">
+		<circle cx="0" cy="0" r="100000" id="background" fill="url(#rulerPattern)" onclick="deselectChoice(event)"></circle><line x1="255" y1="121" x2="145" y2="221" onclick="select(evt.target,evt)" stroke="black" stroke-width="2" item="item1" class="shape" stroke-opacity="1.0" fno="1"></line><rect x="22" y="90" width="179" height="161" onclick="select(evt.target,evt)" fill="#5391d0" stroke="black" stroke-width="1" item="item2" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,385,37)" fno="2"></rect><circle cx="211" cy="55" r="59.91545082831005" onclick="select(evt.target,evt)" fill="lime" stroke="black" stroke-width="2" item="item3" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,68,209)" fno="3"></circle><ellipse cx="273" cy="215" rx="85" ry="50" onclick="select(evt.target,evt)" fill="red" stroke="black" stroke-width="2" item="item4" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,451,146)" fno="4"></ellipse><textCache index="1" content="<p>This is a s&le text</p>"></textCache><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text1" item="item5" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,356,283)" fno="5"><tspan x="40" dy="25">This is a s&le text</tspan></text><image x="100" y="100" width="417.7248169415656px" height="417.7248169415656px" onclick="select(evt.target,evt)" stroke="black" xlink:href="pImages/MIPS_Architecture_(Pipelined).svg" item="item10" class="shape" transform="matrix(1,0,0,1,115.121337890625,183.01336669921875)" stroke-opacity="1.0" fno="6"></image><rect x="150" y="150" width="30.00003494100295" height="59.40004133021989" onmousemove="resize(evt)" onclick="selectSpot(event.target,event)" fill="lightblue" stroke="black" opacity="0.5" stroke-width="2" stroke-opacity="1.0" title="ALU" content="Arithmetic Logic Unit in the CPU takes care of all the calculation work." class="hotSpot" transform="matrix(1,0,0,1,292.3273010253906,351.06451416015625)"></rect></g> 
 </svg>
 </div>
 <script type='text/javascript'>
 document.getElementById('svgbasics').addEventListener('keydown', moveFrame, false);
 </script>
 </body>
-</html>";
-$fn=$_POST["fileName"].".html";
-$fh = fopen($fn, 'w');
-fwrite($fh, $htmlData);
-fclose($fh);
-?>
+</html>

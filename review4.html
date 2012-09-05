@@ -1,12 +1,4 @@
-<?php
-$contents=$_POST["exportContent"];
-$contents=str_replace("•","&#149;",$contents);
-$contents=str_replace("whitespace","&#160",$contents);
-$contents=str_replace("lt","<",$contents);
-$contents=str_replace("gt",">",$contents);
-$contents=str_replace("amp","&",$contents);
-
-$htmlData="<html>
+<html>
 <head>
 <link rel='stylesheet' href='css/jquery-ui-1.8.17.custom.css' />
 <script type='text/javascript' src='js/jquery.min.js'></script>
@@ -478,16 +470,12 @@ function moveFrame(event)
 </div>
 
 <div id='svgbasics' tabindex='0'>
-<svg id='svgcanvas' xmlns='http://www.w3.org/2000/svg' version='1.1' id='svgcanvas' xmlns:xlink='http://www.w3.org/1999/xlink' onclick='zoomNormal()' onload='document.getElementById(\"svgbasics\").focus();loadFrames();loadHotSpots();removeTiles();'>".$contents." 
+<svg id='svgcanvas' xmlns='http://www.w3.org/2000/svg' version='1.1' id='svgcanvas' xmlns:xlink='http://www.w3.org/1999/xlink' onclick='zoomNormal()' onload='document.getElementById("svgbasics").focus();loadFrames();loadHotSpots();removeTiles();'><g id="viewport" onload="storeTransform();zoomNormal()" onclick="zoomTo(event.target);event.stopPropagation();">
+		<circle cx="0" cy="0" r="100000" id="background" fill="url(#rulerPattern)" onclick="deselectChoice(event)"></circle><textCache index="1" content="<p>Implementation Framework</p>"></textCache><g class="frame" item="item8" transform="matrix(1,0,0,1,-75,6)" stroke-opacity="1.0" fno="1"><rect x="169" y="13" width="379.74983358324147" height="539.2447636882027" onclick="select(evt.target,evt)" fill="#ffffff" stroke="black" stroke-width="1" item="item5" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,50,30)"></rect><image x="100" y="100" width="314.86920292329756px" height="463.76613619288287px" onclick="select(evt.target,evt)" stroke="black" xlink:href="pImages/arch.PNG" item="item6" class="shape" transform="matrix(1,0,0,1,151,6)" stroke-opacity="1.0"></image><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text1" item="item7" class="shape" stroke-opacity="1.0" transform="matrix(2.357947587966919,0,0,2.357947587966919,158,-81)"><tspan x="40" dy="25">Implementation Framework</tspan></text></g><textCache index="2" content="<p>Workflow</p>"></textCache><g class="frame" item="item15" transform="matrix(1,0,0,1,47,1)" stroke-opacity="1.0" fno="2"><rect x="242" y="130" width="464.48739975470846" height="316.98126604882134" onclick="select(evt.target,evt)" fill="#ffffff" stroke="black" stroke-width="1" item="item12" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,380,28)"></rect><image x="100" y="100" width="425.14910007092897px" height="118.11644412522918px" onclick="select(evt.target,evt)" stroke="black" xlink:href="pImages/flow.PNG" item="item14" class="shape" transform="matrix(1,0,0,1,542,174)" stroke-opacity="1.0"></image><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text2" item="item13" class="shape" stroke-opacity="1.0" transform="matrix(2.5937423706054688,0,0,2.5937423706054688,686,41)"><tspan x="40" dy="25">Workflow</tspan></text></g></g> 
 </svg>
 </div>
 <script type='text/javascript'>
 document.getElementById('svgbasics').addEventListener('keydown', moveFrame, false);
 </script>
 </body>
-</html>";
-$fn=$_POST["fileName"].".html";
-$fh = fopen($fn, 'w');
-fwrite($fh, $htmlData);
-fclose($fh);
-?>
+</html>

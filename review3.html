@@ -1,12 +1,4 @@
-<?php
-$contents=$_POST["exportContent"];
-$contents=str_replace("•","&#149;",$contents);
-$contents=str_replace("whitespace","&#160",$contents);
-$contents=str_replace("lt","<",$contents);
-$contents=str_replace("gt",">",$contents);
-$contents=str_replace("amp","&",$contents);
-
-$htmlData="<html>
+<html>
 <head>
 <link rel='stylesheet' href='css/jquery-ui-1.8.17.custom.css' />
 <script type='text/javascript' src='js/jquery.min.js'></script>
@@ -478,16 +470,12 @@ function moveFrame(event)
 </div>
 
 <div id='svgbasics' tabindex='0'>
-<svg id='svgcanvas' xmlns='http://www.w3.org/2000/svg' version='1.1' id='svgcanvas' xmlns:xlink='http://www.w3.org/1999/xlink' onclick='zoomNormal()' onload='document.getElementById(\"svgbasics\").focus();loadFrames();loadHotSpots();removeTiles();'>".$contents." 
+<svg id='svgcanvas' xmlns='http://www.w3.org/2000/svg' version='1.1' id='svgcanvas' xmlns:xlink='http://www.w3.org/1999/xlink' onclick='zoomNormal()' onload='document.getElementById("svgbasics").focus();loadFrames();loadHotSpots();removeTiles();'><g id="viewport" onload="storeTransform();zoomNormal()" onclick="zoomTo(event.target);event.stopPropagation();" transform="matrix(1,0,0,1,-7,1)">
+		<circle cx="0" cy="0" r="100000" id="background" fill="url(#rulerPattern)" onclick="deselectChoice(event)"></circle><textCache index="1" content="<p>Presentation Editor</p>"></textCache><textCache index="2" content="<p>Graphics</p><p>Editor</p>"></textCache><textCache index="3" content="<p>Transition</p><p>Editor</p>"></textCache><textCache index="4" content="<p>Text</p><p>Editor</p>"></textCache><textCache index="5" content="<p>Abstraction of Canscape functionalities</p>"></textCache><g class="frame" item="item23" transform="matrix(1,0,0,1,263,-11)" stroke-opacity="1.0" fno="1"><rect x="40" y="133" width="508.42539702880265" height="364.0576916996363" onclick="select(evt.target,evt)" fill="#c0fcba" stroke="black" stroke-width="1" item="item13" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,53,-53)"></rect><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text5" item="item22" class="shape" stroke-opacity="1.0" transform="matrix(2.357947587966919,0,0,2.357947587966919,26,9)"><tspan x="40" dy="25">Abstraction of Canscape functionalities</tspan></text><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text1" item="item14" class="shape" stroke-opacity="1.0" transform="matrix(3.1384284496307373,0,0,3.1384284496307373,32,-87)"><tspan x="40" dy="25">Presentation Editor</tspan></text></g><g class="frame" item="item24" transform="matrix(1,0,0,1,29,-43)" stroke-opacity="1.0" fno="2"><rect x="7" y="135" width="142.74981217129977" height="91.66040570999247" onclick="select(evt.target,evt)" fill="#086506" stroke="black" stroke-width="1" item="item5" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,345,144)"></rect><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#ffffff" onclick="select(evt.target,evt)" id="text2" item="item15" class="shape" stroke-opacity="1.0" transform="matrix(1.610509991645813,0,0,1.610509991645813,317,208)"><tspan x="40" dy="25">Graphics</tspan><tspan x="40" dy="25">Editor</tspan></text></g><g class="frame" item="item26" transform="matrix(1,0,0,1,-94,-49)" stroke-opacity="1.0" fno="3"><rect x="226" y="110" width="120.96168294515398" height="106.68670172802403" onclick="select(evt.target,evt)" fill="#65060d" stroke="black" stroke-width="1" item="item8" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,430,168)"></rect><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#ffffff" onclick="select(evt.target,evt)" id="text3" item="item16" class="shape" stroke-opacity="1.0" transform="matrix(1.7715610265731812,0,0,1.7715610265731812,597,198)"><tspan x="40" dy="25">Transition</tspan><tspan x="40" dy="25">Editor</tspan></text></g><g class="frame" item="item27" transform="matrix(1,0,0,1,2,31)" stroke-opacity="1.0" fno="4"><rect x="205" y="49" width="114.87044476594366" height="78.85700802851267" onclick="select(evt.target,evt)" fill="#061065" stroke="black" stroke-width="1" item="item9" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,512,167)"></rect><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#ffffff" onclick="select(evt.target,evt)" id="text4" item="item17" class="shape" stroke-opacity="1.0" transform="matrix(1.7715610265731812,0,0,1.7715610265731812,665,127)"><tspan x="40" dy="25">Text</tspan><tspan x="40" dy="25">Editor</tspan></text></g></g> 
 </svg>
 </div>
 <script type='text/javascript'>
 document.getElementById('svgbasics').addEventListener('keydown', moveFrame, false);
 </script>
 </body>
-</html>";
-$fn=$_POST["fileName"].".html";
-$fh = fopen($fn, 'w');
-fwrite($fh, $htmlData);
-fclose($fh);
-?>
+</html>

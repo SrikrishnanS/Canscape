@@ -1,0 +1,481 @@
+<html>
+<head>
+<link rel='stylesheet' href='css/jquery-ui-1.8.17.custom.css' />
+<script type='text/javascript' src='js/jquery.min.js'></script>
+<script type='text/javascript' src='js/jquery-ui-1.8.17.custom.min.js'></script>
+<script type='text/javascript' src='js/jquery.svg.js'></script>
+<script type='text/javascript' src='js/jquery.svganim.js'></script>
+<script>
+var selection=null;
+var rotationAngle=0;
+var Sx=1,Sy=1;
+var Tx=0,Ty=0;
+var Rx=0,Ry=0;
+
+//Selection specifics
+
+var sx,sy,tx,ty,rx,ry;
+
+var s1x,s1y,t1x,t1y;
+
+function storeTransform()
+{
+	var svg = document.getElementById('viewport');
+	if(svg.getAttribute('transform')!=null)
+	{
+		var matrix=svg.getAttribute('transform').substring(7);
+		var matrix_elements=matrix.split(',');
+		matrix_elements[5]=matrix_elements[5].substring(0,matrix_elements[5].indexOf(')'));
+		Sx=parseFloat(matrix_elements[0]);
+		Sy=parseFloat(matrix_elements[3]);
+		Tx=parseFloat(matrix_elements[4]);
+		Ty=parseFloat(matrix_elements[5]);
+		Rx=parseFloat(matrix_elements[1]);
+		Ry=parseFloat(matrix_elements[2]);
+	}
+}
+function removeTiles()
+{
+	var background = document.getElementById('background');
+	background.parentNode.removeChild(background);
+}
+function zoomTo(element)
+{
+	highlightAll();
+	storeTransform();
+	var svg=document.getElementById('viewport');
+	while(element.nodeName=='tspan')
+	{
+		element=element.parentNode;	
+	}
+	selection=element;
+	var box = element.getBBox();
+	var initx=box.x;
+	var inity=box.y;
+	var transform='';
+	sx=1,sy=1,tx=0,ty=0,rx=0,ry=0;
+	if(element.getAttribute('transform')!=null)
+	{	
+		transform=element.getAttribute('transform');
+		if(element.getAttribute('transform').indexOf('matrix')>=0)
+		{
+			var matrix=element.getAttribute('transform').substring(7);
+			var matrix_elements=matrix.split(',');
+			matrix_elements[5]=matrix_elements[5].substring(0,matrix_elements[5].indexOf(')'));
+			sx=parseFloat(matrix_elements[0]);
+			sy=parseFloat(matrix_elements[3]);
+			tx=parseFloat(matrix_elements[4]);
+			ty=parseFloat(matrix_elements[5]);
+			rx=parseFloat(matrix_elements[1]);
+			ry=parseFloat(matrix_elements[2]);
+			rotationAngle=Math.asin(rx)*180/Math.PI;	
+		}
+		if(element.getAttribute('transform').indexOf('rotate')>=0)				//get the exact rotation angle if available
+		{
+			var index=element.getAttribute('transform').indexOf('rotate');
+			var str=element.getAttribute('transform').substring(index+7);
+			var str_elements=str.split(',');
+			rotationAngle=parseFloat(str_elements[0]);
+			if(index==0)
+			{
+				transform='';
+			}
+			else
+			{
+				transform=transform.substring(0,index-1);	
+			}
+		}
+	}
+	box.x*=sx;
+	box.x+=tx;
+	box.x*=Sx;
+	box.x+=Tx;
+
+	box.y*=sy;
+	box.y+=ty;
+	box.y*=Sy;
+	box.y+=Ty;
+	
+	box.width*=Sx*sx;
+	box.height*=Sy*sy;
+
+	var cx,cy;
+	if(element.nodeName=='image' || element.nodeName=='rect')
+	{
+		cx=parseFloat(element.getAttribute('x'))+parseFloat(element.getAttribute('width'))/2;
+		cy=parseFloat(element.getAttribute('y'))+parseFloat(element.getAttribute('height'))/2;
+	}
+	else if(element.nodeName=='circle' || element.nodeName=='ellipse')
+	{
+		cx=parseFloat(element.getAttribute('cx'));
+		cy=parseFloat(element.getAttribute('cy'));
+	}
+	else if(element.nodeName=='line')
+	{
+		var x1=parseFloat(element.getAttribute('x1'));
+		var x2=parseFloat(element.getAttribute('x2'));
+		var y1=parseFloat(element.getAttribute('y1'));
+		var y2=parseFloat(element.getAttribute('y2'));		
+		cx=(x1+x2)/2;
+		cy=(y1+y2)/2;
+	}
+	
+	else if(element.nodeName=='text')
+	{
+		var x=parseFloat(element.getAttribute('x'));
+		var y=parseFloat(element.getAttribute('y'));
+		cx=x+10;
+		cy=y+10;	
+	}
+	else if(element.nodeName=='g')
+	{
+		var view = element.getBBox();
+		cx=(view.x+view.width)/2;
+		cy=(view.y+view.height)/2;;
+	}
+	cx*=sx;
+	cx+=tx;
+	cx*=Sx;
+	cx+=Tx;
+	
+	cy*=sy;
+	cy+=ty;
+	cy*=Sy;
+	cy+=Ty;
+	
+	if(element.parentNode.getAttribute('class')=='frame')
+	{
+		if(element.parentNode.getAttribute('transform') != null)
+		{
+			var matrix=element.parentNode.getAttribute('transform').substring(7);
+			var matrix_elements=matrix.split(',');
+			matrix_elements[5]=matrix_elements[5].substring(0,matrix_elements[5].indexOf(')'));
+			s1x = parseFloat(matrix_elements[0]);
+			s1y = parseFloat(matrix_elements[3]);
+			t1x = parseFloat(matrix_elements[4]);
+			t1y = parseFloat(matrix_elements[5]);
+		}
+		else
+		{ 
+			s1x = 1;
+			s1y = 1;
+			t1x = 0;
+			t1y = 0;
+		}
+		box.x*=s1x;
+		box.x+=t1x;
+		box.y*=s1y;
+		box.y+=t1y;
+		box.width*=s1x;
+		box.height*=s1y;
+		cx*=s1x;
+		cx+=t1x;
+		cy*=s1y;
+		cy+=t1y;
+	}
+	
+	var rotator;
+	rotator='rotate('+0+','+cx+','+cy+')';
+	if(transform.length!=0)
+	{
+		rotator=transform+','+rotator;	
+	}
+	element.setAttribute('transform',rotator);
+	$('#svgcanvas').animate({svgViewBox : box.x+' '+box.y+' '+box.width+' '+box.height}, 650);
+	if(element.getAttribute('class')!='hotSpot' && element.parentNode.getAttribute('class')!='frame')
+	{
+		for(var i = 0;i<window.frame.length;++i)
+		{
+			if(window.frame[i].getAttribute('item') != element.getAttribute('item'))
+			{
+				$(window.frame[i]).animate({svgOpacity: '0.25'}, 650);
+			}
+		}
+	}
+}
+function highlightAll()
+{
+	for(var i = 0;i<window.frame.length;i++)
+	{
+		$(window.frame[i]).animate({svgOpacity:'1.0'}, 650);
+	}
+}
+function zoomNormal()
+{
+	var cx,cy;
+	if(selection!=null)
+	{
+		highlightAll();
+		var transform='';
+		if(selection.getAttribute('transform')!=null)
+		{	
+			transform=selection.getAttribute('transform');
+			if(selection.getAttribute('transform').indexOf('rotate')>=0)				//get the exact rotation angle if available
+			{
+				var index=selection.getAttribute('transform').indexOf('rotate');
+				if(index==0)
+				{
+					transform='';
+				}
+				else
+				{
+					transform=transform.substring(0,index-1);	
+				}
+			}
+		}
+		var cx,cy;
+		if(selection.nodeName=='image' || selection.nodeName=='rect')
+		{
+			cx=parseFloat(selection.getAttribute('x'))+parseFloat(selection.getAttribute('width'))/2;
+			cy=parseFloat(selection.getAttribute('y'))+parseFloat(selection.getAttribute('height'))/2;
+		}
+		else if(selection.nodeName=='circle' || selection.nodeName=='ellipse')
+		{
+			cx=parseFloat(selection.getAttribute('cx'));
+			cy=parseFloat(selection.getAttribute('cy'));
+		}
+		else if(selection.nodeName=='line')
+		{
+			var x1=parseFloat(selection.getAttribute('x1'));
+			var x2=parseFloat(selection.getAttribute('x2'));
+			var y1=parseFloat(selection.getAttribute('y1'));
+			var y2=parseFloat(selection.getAttribute('y2'));		
+			cx=(x1+x2)/2;
+			cy=(y1+y2)/2;
+		}
+		
+		else if(selection.nodeName=='text')
+		{
+			var x=parseFloat(selection.getAttribute('x'));
+			var y=parseFloat(selection.getAttribute('y'));
+			cx=x+10;
+			cy=y+10;	
+		}
+		else if(selection.nodeName=='g')
+		{	
+			var view = selection.getBBox();
+			cx=(view.x+view.width)/2;
+			cy=(view.y+view.height)/2;;
+		}
+		var rotator;
+		rotator='rotate('+rotationAngle+','+cx+','+cy+')';
+		if(transform.length!=0)
+		{
+			rotator=transform+','+rotator;	
+		}
+		selection.setAttribute('transform',rotator);
+	}
+	selection=null;
+	$('#svgcanvas').animate({svgViewBox : 0+' '+0+' '+screen.width+' '+screen.height}, 650);
+}
+
+function swapArrayElements(array_object, index_a, index_b)
+{
+    var temp = array_object[index_a];
+    array_object[index_a] = array_object[index_b];
+    array_object[index_b] = temp;
+}
+$(function() 
+{
+	$( '#dialog').dialog(
+	{
+		autoOpen: false, 
+		resizable : false,
+		open: function(event, ui) 
+		{ 
+			//hide close button.
+			$(this).parent().children().children('.ui-dialog-titlebar-close').hide();
+		}
+	});
+});
+function getElementByItem(itemName)
+{
+	var root = document.getElementById('viewport');
+	var itemSelected=root.firstChild;
+	while(itemSelected!=null)
+	{
+		if(itemSelected.nodeType==1 && itemSelected.getAttribute('item')==itemName)
+			return itemSelected;
+		itemSelected = itemSelected.nextSibling;
+	}
+	return null;
+}
+function removeChildren(node)
+{
+	while (node.hasChildNodes()) 
+	{
+    	node.removeChild(node.lastChild);
+    }
+}
+function highlight(element,event)
+{
+	var posX = event.clientX;
+	var posY = event.clientY;
+	var cutoffX = screen.width/2;
+	var cutoffY = screen.height/2;
+	var X,Y;
+	if(posX < cutoffX)
+		X = 'right';
+	else
+		X = 'left';
+	if(posY < cutoffY)
+		Y = 'buttom';
+	else
+		Y = 'top';
+	$(element).animate({svgOpacity : '0.5'}, 400);
+	var textDescription = document.createTextNode(element.getAttribute('content'));
+	removeChildren(document.getElementById('description'));
+	document.getElementById('description').appendChild(textDescription);
+	$('#dialog').dialog('option', 'title', element.getAttribute('title'));
+	$('#dialog').dialog('option', 'position', [X,Y]);
+	$('#dialog').dialog('open');
+}
+function lowlight(element)
+{
+	$(element).animate({svgOpacity : '0.0'}, 400);
+	$('#dialog').dialog('close');
+}
+function loadHotSpots()
+{
+	var root = document.getElementById('viewport');
+	var itemSelected=root.firstChild;
+	while(itemSelected!=null)
+	{
+		if(itemSelected.nodeType==1 && itemSelected.getAttribute('class')=='hotSpot')
+		{
+			lowlight(itemSelected);
+			itemSelected.setAttribute('onmouseover','highlight(this,event)');
+			itemSelected.setAttribute('onmouseout','lowlight(this)');
+		}
+		itemSelected = itemSelected.nextSibling;
+	}
+}
+var frame = new Array();
+var svgNS = 'http://www.w3.org/2000/svg';
+var xlinkNS = 'http://www.w3.org/1999/xlink';
+function loadFrames()
+{
+	var root = document.getElementById('viewport');
+	var itemSelected=root.firstChild;
+	while(itemSelected!=null)
+	{
+		if(itemSelected.nodeType==1 && (itemSelected.getAttribute('class')=='shape' || itemSelected.getAttribute('class')=='frame'))
+		{
+			window.frame.push(itemSelected);
+		}
+		if(itemSelected.nodeType==1 && itemSelected.getAttribute('class')=='hotSpot')
+		{
+			var x = itemSelected.getBBox().x;
+			var y = itemSelected.getBBox().y;
+			
+			sx=1,sy=1,tx=0,ty=0,rx=0,ry=0;
+			if(itemSelected.getAttribute('transform')!=null)
+			{	
+				transform=itemSelected.getAttribute('transform');
+				if(itemSelected.getAttribute('transform').indexOf('matrix')>=0)
+				{
+					var matrix=itemSelected.getAttribute('transform').substring(7);
+					var matrix_elements=matrix.split(',');
+					matrix_elements[5]=matrix_elements[5].substring(0,matrix_elements[5].indexOf(')'));
+					sx=parseFloat(matrix_elements[0]);
+					sy=parseFloat(matrix_elements[3]);
+					tx=parseFloat(matrix_elements[4]);
+					ty=parseFloat(matrix_elements[5]);
+					rx=parseFloat(matrix_elements[1]);
+					ry=parseFloat(matrix_elements[2]);
+					storeTransform();
+					x*=sx;
+					x+=tx;
+					y*=sy;
+					y+=ty-16;
+				}
+			}	
+			var callImg = document.createElementNS(svgNS,'image');
+			callImg.setAttributeNS(xlinkNS,'xlink:href','pImages/callout.svg');	
+			callImg.setAttributeNS(null,'x',x);
+			callImg.setAttributeNS(null,'y',y);
+			callImg.setAttributeNS(null,'width',16);
+			callImg.setAttributeNS(null,'height',16);
+			document.getElementById('viewport').appendChild(callImg);
+		}
+		itemSelected = itemSelected.nextSibling;
+	}
+	maxNum=window.frame.length+1;
+	for(var i = 0;i<window.frame.length;i++)
+	{
+		for(var j = 0;j<window.frame.length;j++)
+		{
+			var inode = window.frame[i];
+			var jnode = window.frame[j];
+			var ifno = parseInt(inode.getAttribute('fno'));
+			var jfno = parseInt(jnode.getAttribute('fno'));
+			if(ifno < jfno)
+			{
+				swapArrayElements(window.frame,i,j);
+			}
+		}
+	}
+}
+var viewNumber = -1;
+var maxNum;
+var minNum=0;
+function moveFrame(event)
+{
+	var e = window.event || event;
+	switch(e.keyCode)
+	{
+		case 37:
+		case 33:
+		if(viewNumber <minNum)
+		{
+			return;
+		}
+		viewNumber --;
+		zoomTo(window.frame[viewNumber]);
+		break;
+		case 39:
+		case 34:
+			if(viewNumber >maxNum)
+			{
+				viewNumber=maxNum;
+				return;
+			}
+			viewNumber ++;
+			zoomTo(window.frame[viewNumber]);
+			break;
+		case 40:
+			zoomNormal();
+			break;
+		case 38:	
+			viewNumber =-1;
+			zoomNormal();
+			break;				
+				
+		case 35: 
+			viewNumber=maxNum;
+			zoomTo(window.frame[viewNumber]);								
+			break;
+										
+		case 36: 
+			viewNumber=minNum;
+			zoomTo(window.frame[viewNumber]);					
+			break;
+	}
+}
+</script>
+</head>
+<body>
+<div id='dialog' title='Title goes here' style='display:none;height:100%'>
+	<p id='description' style='font-family:serif;text-align:justify;'>Description goes here</p>
+</div>
+
+<div id='svgbasics' tabindex='0'>
+<svg id='svgcanvas' xmlns='http://www.w3.org/2000/svg' version='1.1' id='svgcanvas' xmlns:xlink='http://www.w3.org/1999/xlink' onclick='zoomNormal()' onload='document.getElementById("svgbasics").focus();loadFrames();loadHotSpots();removeTiles();'><g id="viewport" onload="storeTransform();zoomNormal()" onclick="zoomTo(event.target);event.stopPropagation();" transform="matrix(1,0,0,1,-3,20)">
+		<circle cx="0" cy="0" r="100000" id="background" fill="url(#rulerPattern)" onclick="deselectChoice(event)"></circle><textCache index="1" content="<p>Canvas Based Presentation using SVG and JS</p>"></textCache><textCache index="2" content="<p>S. Srikrishnan , V. Vishal Gautham</p>"></textCache><textCache index="3" content="<p>Guided by: Dr. R. S. Mi<on</p>"></textCache><textCache index="4" content="<p>Department of CSE</p><p>SSNCE</p>"></textCache><textCache index="5" content="<p>Final Review</p>"></textCache><g class="frame" item="item8" transform="matrix(1,0,0,1,-23,-8)" stroke-opacity="1.0" fno="1"><rect x="291" y="45" width="282.56397950000013" height="245.53835460000016" onclick="select(evt.target,evt)" fill="#ebf291" stroke="black" stroke-width="1" item="item1" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,-182,-12)"></rect><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text5" item="item6" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,167,189)"><tspan x="40" dy="25">Final Review</tspan></text><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text4" item="item5" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,157,127)"><tspan x="40" dy="25">Department of CSE</tspan><tspan x="40" dy="25">SSNCE</tspan></text><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text3" item="item4" class="shape" stroke-opacity="1.0" transform="matrix(1.2100000381469727,0,0,1.2100000381469727,122,75)"><tspan x="40" dy="25">Guided by: Dr. R. S. Milton</tspan></text><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text2" item="item3" class="shape" stroke-opacity="1.0" transform="matrix(1.3309999704360962,0,0,1.3309999704360962,93,26)"><tspan x="40" dy="25">S. Srikrishnan , V. Vishal Gautham</tspan></text><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text1" item="item2" class="shape" stroke-opacity="1.0" transform="matrix(1.2100000381469727,0,0,1.2100000381469727,69,-22)"><tspan x="40" dy="25">Canvas Based Presentation using SVG and JS</tspan></text></g><textCache index="6" content="<p>Presentation Paradigms</p>"></textCache><textCache index="7" content="<p>Slide based</p>"></textCache><textCache index="8" content="<p>Canvas based</p>"></textCache><textCache index="9" content="<p><ul><li>Linear sequence<br></li><li>Each slide has bullet points</li></ul></p>"></textCache><textCache index="10" content="<p><ul><li>Material in a large canvas<br></li><li>Canvas is boundary-less</li><li>Change focus to show information</li></ul></p>"></textCache><textCache index="11" content="<p>Why not slide-based?</p>"></textCache><textCache index="12" content="<p><ul><li>Forces splitting of information<br></li><li>Tendency to skip slides</li><li>Static navigation path</li><li>Listeners distracted</li></ul></p>"></textCache><g class="frame" item="item23" transform="matrix(1,0,0,1,-326,-30)" stroke-opacity="1.0" fno="5"><circle cx="102" cy="187" r="153.78299045932914" onclick="select(evt.target,evt)" fill="#fbd66f" stroke="black" stroke-width="2" item="item18" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,806,-11)"></circle><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text12" item="item20" class="shape" stroke-opacity="1.0" transform="matrix(1.3309999704360962,0,0,1.3309999704360962,736,65)"><tspan x="40" dy="25"><tspan x="40" dy="25">&#160;&#160;&#160;&#160;&#149;&#160;&#160;&#160;&#160;Forces splitting of information<tspan x="40" dy="25"></tspan><tspan x="40" dy="25">&#160;&#160;&#160;&#160;&#149;&#160;&#160;&#160;&#160;Tendency to skip slides</tspan><tspan x="40" dy="25">&#160;&#160;&#160;&#160;&#149;&#160;&#160;&#160;&#160;Static navigation path</tspan><tspan x="40" dy="25">&#160;&#160;&#160;&#160;&#149;&#160;&#160;&#160;&#160;Listeners distracted</tspan></tspan></tspan></text><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text11" item="item19" class="shape" stroke-opacity="1.0" transform="matrix(2.357947587966919,0,0,2.357947587966919,695,-42)"><tspan x="40" dy="25">Why not slide-based?</tspan></text></g><g class="frame" item="item26" transform="matrix(1,0,0,1,-167,22)" stroke-opacity="1.0" fno="2"><ellipse cx="155" cy="243" rx="301.2891241652162" ry="125.5371350688401" onclick="select(evt.target,evt)" fill="#fdd5d3" stroke="black" stroke-width="2" item="item9" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,314,176)"></ellipse><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text6" item="item10" class="shape" stroke-opacity="1.0" transform="matrix(1.9487171173095703,0,0,1.9487171173095703,280,199)"><tspan x="40" dy="25">Presentation Paradigms</tspan></text></g><g class="frame" item="item27" transform="matrix(1,0,0,1,-196,-12)" stroke-opacity="1.0" fno="3"><rect x="182" y="149" width="161.15702479338844" height="120.66115702479335" onclick="select(evt.target,evt)" fill="#f4fdd3" stroke="black" stroke-width="1" item="item11" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,72,249)"></rect><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text9" item="item15" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,211,389)"><tspan x="40" dy="25"><tspan x="40" dy="25">&#160;&#160;&#160;&#160;&#149;&#160;&#160;&#160;&#160;Linear sequence<tspan x="40" dy="25"></tspan><tspan x="40" dy="25">&#160;&#160;&#160;&#160;&#149;&#160;&#160;&#160;&#160;Each slide has bullet points</tspan></tspan></tspan></text><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text7" item="item13" class="shape" stroke-opacity="1.0" transform="matrix(1.610509991645813,0,0,1.610509991645813,219,322)"><tspan x="40" dy="25">Slide based</tspan></text></g><g class="frame" item="item28" transform="matrix(1,0,0,1,-208,16)" stroke-opacity="1.0" fno="4"><rect x="299" y="174" width="196" height="133" onclick="select(evt.target,evt)" fill="#d3fdf1" stroke="black" stroke-width="1" item="item12" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,172,187)"></rect><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text10" item="item16" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,429,352)"><tspan x="40" dy="25"><tspan x="40" dy="25">&#160;&#160;&#160;&#160;&#149;&#160;&#160;&#160;&#160;Material in a large canvas<tspan x="40" dy="25"></tspan><tspan x="40" dy="25">&#160;&#160;&#160;&#160;&#149;&#160;&#160;&#160;&#160;Canvas is boundary-less</tspan><tspan x="40" dy="25">&#160;&#160;&#160;&#160;&#149;&#160;&#160;&#160;&#160;Change focus to show information</tspan></tspan></tspan></text><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text8" item="item14" class="shape" stroke-opacity="1.0" transform="matrix(1.7715610265731812,0,0,1.7715610265731812,437,269)"><tspan x="40" dy="25">Canvas based</tspan></text></g><textCache index="13" content="<p>Canvas based model</p>"></textCache><textCache index="14" content="<p><ul><li>Lay information naturally, freely<br></li><li>Reflects creator's thought process</li><li>Two D space plus depth and time</li></ul></p>"></textCache><g class="frame" item="item32" transform="matrix(1,0,0,1,-138,-3)" stroke-opacity="1.0" fno="7"><rect x="224" y="15" width="376.10240030000017" height="265.02552560000015" onclick="select(evt.target,evt)" fill="#9e9cf7" stroke="black" stroke-width="1" item="item22" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,567,303)"></rect><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text14" item="item30" class="shape" stroke-opacity="1.0" transform="matrix(1.4641000032424927,0,0,1.4641000032424927,748,304)"><tspan x="40" dy="25"><tspan x="40" dy="25">&#160;&#160;&#160;&#160;&#149;&#160;&#160;&#160;&#160;Lay information naturally, freely<tspan x="40" dy="25"></tspan><tspan x="40" dy="25">&#160;&#160;&#160;&#160;&#149;&#160;&#160;&#160;&#160;Reflects creator's thought process</tspan><tspan x="40" dy="25">&#160;&#160;&#160;&#160;&#149;&#160;&#160;&#160;&#160;Two D space plus depth and time</tspan></tspan></tspan></text><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text13" item="item29" class="shape" stroke-opacity="1.0" transform="matrix(2.853116750717163,0,0,2.853116750717163,718,175)"><tspan x="40" dy="25">Canvas based model</tspan></text></g><textCache index="15" content="<p>Dynamic flow</p><p><ul><li>Pan</li><li>Zoom</li><li>Rotate</li></ul></p>"></textCache><g class="frame" item="item34" transform="matrix(1,0,0,1,-141,345)" stroke-opacity="1.0" fno="8"><rect x="158" y="84" width="97.50004246383425" height="95.96056810914213" onclick="select(evt.target,evt)" fill="#91f390" stroke="black" stroke-width="1" item="item31" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,861,49)"></rect><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text15" item="item33" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,986,79)"><tspan x="40" dy="25">Dynamic flow</tspan><tspan x="40" dy="25"><tspan x="40" dy="25">&#160;&#160;&#160;&#160;&#149;&#160;&#160;&#160;&#160;Pan</tspan><tspan x="40" dy="25">&#160;&#160;&#160;&#160;&#149;&#160;&#160;&#160;&#160;Zoom</tspan><tspan x="40" dy="25">&#160;&#160;&#160;&#160;&#149;&#160;&#160;&#160;&#160;Rotate</tspan></tspan></text></g><textCache index="16" content="<p>Existing Work</p>"></textCache><textCache index="17" content="<p>JessyInk</p>"></textCache><textCache index="18" content="<p>Prezi</p>"></textCache><textCache index="19" content="<p>Ahead</p>"></textCache><g class="frame" item="item43" transform="matrix(1,0,0,1,-132,15)" stroke-opacity="1.0" fno="9"><rect x="26" y="177" width="227.60100000000008" height="231.59400000000005" onclick="select(evt.target,evt)" fill="#caf2ca" stroke="black" stroke-width="1" item="item36" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,902,-174)"></rect><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text16" item="item35" class="shape" stroke-opacity="1.0" transform="matrix(1.7715610265731812,0,0,1.7715610265731812,906,-82)"><tspan x="40" dy="25">Existing Work</tspan></text></g><g class="frame" item="item44" transform="matrix(1,0,0,1,30,-6)" stroke-opacity="1.0" fno="10"><circle cx="264" cy="121" r="39.118043352726765" onclick="select(evt.target,evt)" fill="#fbf898" stroke="black" stroke-width="2" item="item37" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,615,-17)"></circle><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text17" item="item40" class="shape" stroke-opacity="1.0" transform="matrix(1.3309999704360962,0,0,1.3309999704360962,799,22)"><tspan x="40" dy="25">JessyInk</tspan></text></g><g class="frame" item="item45" transform="matrix(1,0,0,1,29,0)" stroke-opacity="1.0" fno="11"><circle cx="332" cy="107" r="40.58614207824677" onclick="select(evt.target,evt)" fill="#fbed98" stroke="black" stroke-width="2" item="item38" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,489,86)"></circle><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text18" item="item41" class="shape" stroke-opacity="1.0" transform="matrix(1.3309999704360962,0,0,1.3309999704360962,749,108)"><tspan x="40" dy="25">Prezi</tspan></text></g><g class="frame" item="item46" transform="matrix(1,0,0,1,27,-4)" stroke-opacity="1.0" fno="12"><circle cx="280" cy="188" r="41.800000000000004" onclick="select(evt.target,evt)" fill="#fbcd98" stroke="black" stroke-width="2" item="item39" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,660,8)"></circle><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text19" item="item42" class="shape" stroke-opacity="1.0" transform="matrix(1.3309999704360962,0,0,1.3309999704360962,866,113)"><tspan x="40" dy="25">Ahead</tspan></text></g><textCache index="20" content="<p>Building Canscape</p>"></textCache><textCache index="21" content="<p>SVG</p>"></textCache><textCache index="22" content="<p>JavaScript</p>"></textCache><textCache index="23" content="<p>W3C</p><p>Web Browser</p>"></textCache><textCache index="24" content="<p>W3C</p><p>Web&nbsp;</p><p>Browser</p>"></textCache><g class="frame" item="item56" transform="matrix(1,0,0,1,16,170)" stroke-opacity="1.0" fno="14"><ellipse cx="60" cy="229" rx="82.28000000000002" ry="111.32000000000001" onclick="select(evt.target,evt)" fill="#d9dec4" stroke="black" stroke-width="2" item="item47" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,1056,-106)"></ellipse><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text20" item="item48" class="shape" stroke-opacity="1.0" transform="matrix(1.3309999704360962,0,0,1.3309999704360962,1002,-19)"><tspan x="40" dy="25">Building Canscape</tspan></text></g><g class="frame" item="item57" stroke-opacity="1.0" fno="15"><rect x="237" y="181" width="56.19488966891741" height="51.270595213393726" onclick="select(evt.target,evt)" fill="#e8f0c7" stroke="black" stroke-width="1" item="item49" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,829,77)"></rect><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text21" item="item52" class="shape" stroke-opacity="1.0" transform="matrix(1.3309999704360962,0,0,1.3309999704360962,1022,205)"><tspan x="40" dy="25">SVG</tspan></text></g><g class="frame" item="item58" stroke-opacity="1.0" fno="16"><rect x="254" y="158" width="59.013183596531235" height="60.55265795122336" onclick="select(evt.target,evt)" fill="#e6cf75" stroke="black" stroke-width="1" item="item51" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,881,102)"></rect><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text22" item="item53" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,1100,226)"><tspan x="40" dy="25">JavaScript</tspan></text></g><g class="frame" item="item59" stroke-opacity="1.0" fno="17"><rect x="294" y="13" width="49.91628968244144" height="63.44500370852371" onclick="select(evt.target,evt)" fill="#f8afcf" stroke="black" stroke-width="1" item="item50" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,794,309)"></rect><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" transform="matrix(1,0,0,1,1051,270)" onclick="select(evt.target,evt)" font-family="serif" id="text24" item="item55" class="shape" stroke-opacity="1.0"><tspan x="40" dy="25">W3C</tspan><tspan x="40" dy="25">Web&#160;</tspan><tspan x="40" dy="25">Browser</tspan></text></g></g> 
+</svg>
+</div>
+<script type='text/javascript'>
+document.getElementById('svgbasics').addEventListener('keydown', moveFrame, false);
+</script>
+</body>
+</html>

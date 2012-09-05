@@ -154,7 +154,10 @@ function drawBackground()
 function deleteNode()
 {
 	removeElementByItem(element,window.selectedItem.getAttribute('item'));
-	window.selectedItem.parentNode.removeChild(window.selectedItem);
+	var parent = window.selectedItem.parentNode;
+	parent.removeChild(window.selectedItem);
+	if(parent.getAttribute('class')=='frame' && !parent.hasChildNodes())
+		parent.parentNode.removeChild(parent);
 	$('#colorPicker').hide();
 }
 

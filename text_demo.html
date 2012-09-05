@@ -1,12 +1,4 @@
-<?php
-$contents=$_POST["exportContent"];
-$contents=str_replace("•","&#149;",$contents);
-$contents=str_replace("whitespace","&#160",$contents);
-$contents=str_replace("lt","<",$contents);
-$contents=str_replace("gt",">",$contents);
-$contents=str_replace("amp","&",$contents);
-
-$htmlData="<html>
+<html>
 <head>
 <link rel='stylesheet' href='css/jquery-ui-1.8.17.custom.css' />
 <script type='text/javascript' src='js/jquery.min.js'></script>
@@ -478,16 +470,12 @@ function moveFrame(event)
 </div>
 
 <div id='svgbasics' tabindex='0'>
-<svg id='svgcanvas' xmlns='http://www.w3.org/2000/svg' version='1.1' id='svgcanvas' xmlns:xlink='http://www.w3.org/1999/xlink' onclick='zoomNormal()' onload='document.getElementById(\"svgbasics\").focus();loadFrames();loadHotSpots();removeTiles();'>".$contents." 
+<svg id='svgcanvas' xmlns='http://www.w3.org/2000/svg' version='1.1' id='svgcanvas' xmlns:xlink='http://www.w3.org/1999/xlink' onclick='zoomNormal()' onload='document.getElementById("svgbasics").focus();loadFrames();loadHotSpots();removeTiles();'><g id="viewport" onload="storeTransform();zoomNormal()" onclick="zoomTo(event.target);event.stopPropagation();" transform="matrix(1,0,0,1,299,36)">
+		<circle cx="0" cy="0" r="100000" id="background" fill="url(#rulerPattern)" onclick="deselectChoice(event)"></circle><textCache index="1" content="<p><b>HelloWorld!</b></p>"></textCache><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text1" item="item1" class="shape" stroke-opacity="1.0" transform="matrix(1.610509991645813,0,0,1.610509991645813,-139,-31)" fno="1"><tspan x="40" dy="25"><tspan style="font-weight:bold">HelloWorld!</tspan></tspan></text><textCache index="2" content="<p>This is text editor!</p>"></textCache><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text2" item="item2" class="shape" stroke-opacity="1.0" transform="matrix(1.3309999704360962,0,0,1.3309999704360962,-129,286)" fno="2"><tspan x="40" dy="25">This is text editor!</tspan></text><textCache index="3" content="<p>This is BIG!</p>"></textCache><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" font-family="serif" id="text3" item="item3" class="shape" stroke-opacity="1.0" transform="matrix(17.449403762817383,0,0,17.449403762817383,-631,-869)" fno="3"><tspan x="40" dy="25">This is BIG!</tspan></text><textCache index="4" content="<p>This is SMALL!</p>"></textCache><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text4" item="item4" class="shape" stroke-opacity="1.0" transform="matrix(0.3504939079284668,0,0,0.3504939079284668,980,180)" fno="4"><tspan x="40" dy="25">This is SMALL!</tspan></text><textCache index="5" content="<p><i>Thank you!!!!!</i></p>"></textCache><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#1321b4" onclick="select(evt.target,evt)" font-family="serif" id="text5" item="item5" class="shape" stroke-opacity="1.0" transform="matrix(1.2100000000000002,0,0,1.2100000000000002,539,466)" fno="5"><tspan x="40" dy="25"><tspan style="font-style:italic">Thank you!!!!!</tspan></tspan></text></g> 
 </svg>
 </div>
 <script type='text/javascript'>
 document.getElementById('svgbasics').addEventListener('keydown', moveFrame, false);
 </script>
 </body>
-</html>";
-$fn=$_POST["fileName"].".html";
-$fh = fopen($fn, 'w');
-fwrite($fh, $htmlData);
-fclose($fh);
-?>
+</html>

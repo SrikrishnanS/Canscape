@@ -146,7 +146,10 @@ function drawBackground()
 function deleteNode()
 {
 	removeElementByItem(element,window.selectedItem.getAttribute('item'));
-	window.selectedItem.parentNode.removeChild(window.selectedItem);
+	var parent = window.selectedItem.parentNode;
+	parent.removeChild(window.selectedItem);
+	if(parent.getAttribute('class')=='frame' && !parent.hasChildNodes())
+		parent.parentNode.removeChild(parent);
 	$('#colorPicker').hide();
 }
 
@@ -1112,8 +1115,8 @@ function loadFrames()
 					stroke-width='1'
 					fill='none'/>
             </pattern> 
-        </defs><g id="viewport" onload="storeTransform();zoomNormal()" onclick="zoomTo(event.target);event.stopPropagation();" transform="matrix(1,0,0,1,267,54)">
-		<circle cx="0" cy="0" r="100000" id="background" fill="url(#rulerPattern)" onclick="deselectChoice(event)"></circle><g class="frame" item="item5" transform="matrix(1,0,0,1,-64,105)"><circle cx="79" cy="50" r="49" onclick="select(evt.target,evt)" fill="lime" stroke="black" stroke-width="2" item="item2" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,-13,99)"></circle><circle cx="171" cy="87" r="57" onclick="select(evt.target,evt)" fill="purple" stroke="black" stroke-width="2" item="item3" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,35,-40)"></circle><circle cx="131" cy="119" r="52" onclick="select(evt.target,evt)" fill="orange" stroke="black" stroke-width="2" item="item4" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,201,11)"></circle><circle cx="210" cy="244" r="34" onclick="select(evt.target,evt)" fill="purple" stroke="black" stroke-width="2" item="item1" class="shape" stroke-opacity="1.0"></circle></g></g><script xlink:href='js/panzoom.js' type='text/javascript'></script>
+        </defs><g id="viewport" onload="storeTransform();zoomNormal()" onclick="zoomTo(event.target);event.stopPropagation();">
+		<circle cx="0" cy="0" r="100000" id="background" fill="url(#rulerPattern)" onclick="deselectChoice(event)"></circle><textCache index="1" content="<p>Initial content</p>"></textCache><text x="40" y="40" stroke="black" stroke-width="0.1" font-size="12" fill="#000000" onclick="select(evt.target,evt)" id="text1" item="item3" class="shape" stroke-opacity="1.0"><tspan x="40" dy="25">Initial content</tspan></text><image x="100" y="100" width="50px" height="50px" onclick="select(evt.target,evt)" stroke="black" xlink:href="pImages/ubuntu.png" item="item4" class="shape" transform="matrix(1,0,0,1,281,-14)" stroke-opacity="1.0"></image><rect x="150" y="150" width="175" height="125" onmousemove="resize(evt)" onclick="selectSpot(event.target,event)" fill="lightblue" stroke="black" opacity="0.5" stroke-width="2" stroke-opacity="1.0" title="undefined" content="undefined" class="hotSpot"></rect><rect x="150" y="150" width="96" height="125" onmousemove="resize(evt)" onclick="selectSpot(event.target,event)" fill="lightblue" stroke="black" opacity="0.5" stroke-width="2" stroke-opacity="1.0" title="Ubuntu" content="linux dist" class="hotSpot" transform="matrix(1,0,0,1,214,-72)"></rect><g class="frame" item="item6" stroke-opacity="1.0"><circle cx="160" cy="186" r="40" onclick="select(evt.target,evt)" fill="#80addb" stroke="black" stroke-width="2" item="item2" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,386,5)"></circle><rect x="143" y="98" width="111" height="190" onclick="select(evt.target,evt)" fill="#ffffff" stroke="black" stroke-width="1" item="item1" class="shape" stroke-opacity="1.0" transform="matrix(1,0,0,1,709,76)"></rect></g></g><script xlink:href='js/panzoom.js' type='text/javascript'></script>
 </svg>
 </div>
 <script type='text/javascript'>

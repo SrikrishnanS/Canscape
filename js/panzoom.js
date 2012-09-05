@@ -333,7 +333,7 @@ function handleKey(event)
 	}
 }
 /*
- * Compute the scaling parameters to manipulate the stroke width of the tiles
+ * Compute the scaling parameters to normalize the stroke width of the tiles
  */
 function adjustTileDimension()
 {	
